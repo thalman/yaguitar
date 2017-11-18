@@ -1,0 +1,50 @@
+%
+% This file is under MPL 2.0 License
+%
+\ifx\makeatletter\undefined
+  \def\makeatletter{\catcode`\@=11 }\relax
+  \def\makeatother{\catcode`\@=12 }\relax
+\fi
+%
+\makeatletter
+%
+\def\theChord#1{\strut{\bf #1}\hbox to 2pt{\hss}}%
+%
+\def\chordSharp{\raise 4pt\hbox{$\sharp$}}%
+\def\chordFlat{\raise 4pt\hbox{$\flat$}}%
+%
+\newdimen\chordskip \chordskip=\baselineskip
+%
+\def\activateChordChars {\catcode`\#=13\catcode`b=13\relax}%
+\def\deactivateChordChars {\catcode`\#=6\catcode`b=11\relax}%
+%
+\def\chord{\activateChordChars\y@gChord}%
+%
+\activateChordChars
+\let b\chordFlat
+\let #\chordSharp
+\deactivateChordChars
+%
+\def\y@gChord#1{\relax
+  \hskip 0pt
+  \raise \chordskip \hbox to 0pt{\theChord{#1}\hss}\deactivateChordChars
+}
+%
+\def\y@gChordEnv{\activateChordChars\y@gChordBracket}%
+\def\y@gChordBracket#1]{\y@gChord{#1}}%
+%
+%
+%
+\def\y@gActivateEnv{\catcode`\^^M=13\catcode`\[=13}%
+\def\y@gDeactivateEnv{\catcode`\^^M=5\catcode`\[=12}%
+\def\y@gNewLine{\par\leavevmode}%
+\y@gActivateEnv\def\y@gOn{\let^^M\y@gNewLine\let[\y@gChordEnv}\y@gDeactivateEnv
+%
+\def\guitarOn{%
+\y@gActivateEnv\y@gOn}%
+%
+\def\guitarOff{%
+\y@gDeactivateEnv
+}%
+\makeatother
+\endinput
