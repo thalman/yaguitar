@@ -15,36 +15,77 @@
 %
 \newdimen\chordskip \chordskip=\baselineskip
 %
-\def\activateChordChars {\catcode`\#=13\catcode`b=13\relax}%
-\def\deactivateChordChars {\catcode`\#=6\catcode`b=11\relax}%
+% macros for saving original definitions of active chars
 %
-\def\chord{\activateChordChars\y@gChord}%
+\def\y@gSaveSharp{}
+\def\y@gSaveFlat{}
+\def\y@gSaveBracket{}
+\def\y@gSaveSpace{}
+\def\y@gSaveNewLine{}
 %
-\activateChordChars
-\let b\chordFlat
-\let #\chordSharp
-\deactivateChordChars
+% Active characters inside chord (# = sharp, b = flat)
+%
+\def\y@gActivateChordChars {\catcode`\#=13\catcode`b=13\relax}%
+\def\y@gDeactivateChordChars {\catcode`\#=6\catcode`b=11\relax}%
+%
+\y@gActivateChordChars
+%
+\def\y@gChordCharsOn{%
+\y@gActivateChordChars
+\let\y@gSaveFlat b\let b\chordFlat
+\let\y@gSaveSharp #\let #\chordSharp
+}%
+%
+\def\y@gChordCharsOff{%
+\let b\y@gSaveFlat
+\let # \y@gSaveSharp
+\y@gDeactivateChordChars
+}%
+%
+\y@gDeactivateChordChars
+%
+\def\chord{\y@gChordCharsOn\y@gChord}%
 %
 \def\y@gChord#1{\relax
   \hskip 0pt
-  \raise \chordskip \hbox to 0pt{\theChord{#1}\hss}\deactivateChordChars
+  \raise \chordskip \hbox to 0pt{\theChord{#1}\hss}\y@gChordCharsOff
 }
 %
-\def\y@gChordEnv{\activateChordChars\y@gChordBracket}%
+\def\y@gChordEnv{\y@gChordCharsOn\y@gChordBracket}%
 \def\y@gChordBracket#1]{\y@gChord{#1}}%
 %
 %
 %
-\def\y@gActivateEnv{\catcode`\^^M=13\catcode`\[=13}%
-\def\y@gDeactivateEnv{\catcode`\^^M=5\catcode`\[=12}%
+\def\y@gActivateEnvChars{\catcode`\^^M=13\catcode`\[=13\catcode`\ =13}%
+\def\y@gDeactivateEnvChars{\catcode`\^^M=5\catcode`\[=12\catcode`\ =10}%
+%
 \def\y@gNewLine{\par\leavevmode}%
-\y@gActivateEnv\def\y@gOn{\let^^M\y@gNewLine\let[\y@gChordEnv}\y@gDeactivateEnv
+\def\y@gSpace{{ }}%
 %
-\def\guitarOn{%
-\y@gActivateEnv\y@gOn}%
 %
-\def\guitarOff{%
-\y@gDeactivateEnv
+%
+\y@gActivateEnvChars%
+%
+\def\y@gOn{\y@gActivateEnvChars%
+\let\y@gSaveBracket[\let[\y@gChordEnv%
+\let\y@gSaveNewLine^^M\let^^M\y@gNewLine%
+\let\y@gSaveSpace \let \y@gSpace%
 }%
+%
+\def\y@gOff{%
+\let[\y@gSaveBracket%
+\let^^M\y@gSaveNewLine%
+\let \y@gSaveSpace%
+\y@gDeactivateEnvChars%
+}%
+%
+\y@gDeactivateEnvChars%
+%
+%
+%
+\def\guitarOn{\y@gOn}%
+%
+\def\guitarOff{\y@gOff}%
+%
 \makeatother
 \endinput
