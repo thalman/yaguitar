@@ -22,6 +22,16 @@
 \def\y@gSaveBracket{}
 \def\y@gSaveSpace{}
 \def\y@gSaveNewLine{}
+\let\y@gTempCmd\relax
+%
+%
+%
+\newbox\y@gChordBox
+\newbox\y@gTempBox
+\newbox\y@gTextBox
+\newdimen\y@gDim
+\let\y@gIfHaveSpace\iffalse
+\let\y@gIfHaveTextBox\iffalse
 %
 % Active characters inside chord (# = sharp, b = flat)
 %
@@ -38,7 +48,7 @@
 %
 \def\y@gChordCharsOff{%
 \let b\y@gSaveFlat
-\let # \y@gSaveSharp
+\let #\y@gSaveSharp
 \y@gDeactivateChordChars
 }%
 %
@@ -46,21 +56,78 @@
 %
 \def\chord{\y@gChordCharsOn\y@gChord}%
 %
-\def\y@gChord#1{\relax
+\def\y@gChord#1{%
   \hskip 0pt
-  \raise \chordskip \hbox to 0pt{\theChord{#1}\hss}\y@gChordCharsOff
-}
+  \setbox \y@gChordBox = \hbox {\theChord{#1}}%
+  \raise \chordskip \hbox to 0pt{\copy\y@gChordBox\hss}\y@gChordCharsOff
+}%
 %
-\def\y@gChordEnv{\y@gChordCharsOn\y@gChordBracket}%
-\def\y@gChordBracket#1]{\y@gChord{#1}}%
 %
+%
+\def\y@gChordEnv{%
+  \y@gFlushTextBox
+  \y@gChordCharsOn
+  \y@gChordBracket
+}%
+%
+\def\y@gChordBracket#1]{%
+  \y@gChord{#1}%
+  \let\y@gIfHaveSpace\iffalse
+  \let\y@gIfHaveTextBox\iftrue
+  \setbox\y@gTextBox=\hbox\bgroup
+}%
+%
+\def\y@gFlushTextBox{%
+  \y@gIfHaveTextBox
+    \let\y@gTempCmd\egroup
+  \else
+    \let\y@gTempCmd\relax
+  \fi
+  \y@gTempCmd
+  \y@gIfHaveTextBox
+    \ifdim \wd\y@gTextBox>\wd\y@gChordBox
+      \copy\y@gTextBox
+    \fi
+    \ifdim \wd\y@gTextBox=\wd\y@gChordBox
+      \copy\y@gTextBox
+    \fi
+    \ifdim \wd\y@gTextBox<\wd\y@gChordBox
+      \y@gIfHaveSpace
+        \message{space}%
+        \hbox to \wd\y@gChordBox{\copy\y@gTextBox\hss}%
+      \else
+        \message{nospace}%
+        \y@gDim=\wd\y@gChordBox
+        \advance\y@gDim by -\wd\y@gTextBox
+        \hbox to \wd\y@gChordBox{\copy\y@gTextBox\vrule width \y@gDim height 0.5ex depth -0.4ex}%
+      \fi
+    \fi
+  \fi
+  \let\y@gIfHaveTextBox\iffalse
+}%
 %
 %
 \def\y@gActivateEnvChars{\catcode`\^^M=13\catcode`\[=13\catcode`\ =13}%
 \def\y@gDeactivateEnvChars{\catcode`\^^M=5\catcode`\[=12\catcode`\ =10}%
 %
-\def\y@gNewLine{\par\leavevmode}%
-\def\y@gSpace{{ }}%
+\def\y@gNewLine{\y@gFlushTextBox\par\leavevmode}%
+\def\y@gSpace{%
+  \space
+  \y@gIfHaveTextBox
+    \let\y@gTempCmd\egroup
+  \else
+    \let\y@gTempCmd\relax
+  \fi
+  \y@gTempCmd
+  \let\y@gIfHaveSpace\iftrue
+  \y@gIfHaveTextBox
+    \let\y@gTempCmd\bgroup
+  \else
+    \let\y@gTempCmd\relax
+  \fi
+  \y@gTempCmd
+  \y@gFlushTextBox}%
+%\def\y@gSpace{\space\expandafter\y@gFlushTextBox\let\y@gIfHaveSpace\iftrue}%
 %
 %
 %
