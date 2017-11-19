@@ -92,14 +92,16 @@
       \copy\y@gTextBox
     \fi
     \ifdim \wd\y@gTextBox<\wd\y@gChordBox
-      \y@gIfHaveSpace
-        \message{space}%
+      \ifdim \wd\y@gTextBox=0pt
         \hbox to \wd\y@gChordBox{\copy\y@gTextBox\hss}%
       \else
-        \message{nospace}%
-        \y@gDim=\wd\y@gChordBox
-        \advance\y@gDim by -\wd\y@gTextBox
-        \hbox to \wd\y@gChordBox{\copy\y@gTextBox\vrule width \y@gDim height 0.5ex depth -0.4ex}%
+        \y@gIfHaveSpace
+          \hbox to \wd\y@gChordBox{\copy\y@gTextBox\hss}%
+        \else
+          \y@gDim=\wd\y@gChordBox
+          \advance\y@gDim by -\wd\y@gTextBox
+          \hbox to \wd\y@gChordBox{\copy\y@gTextBox\vrule width \y@gDim height 0.5ex depth -0.4ex}%
+        \fi
       \fi
     \fi
   \fi
