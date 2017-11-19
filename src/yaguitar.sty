@@ -156,5 +156,11 @@
 %
 \def\guitarOff{\y@gOff}%
 %
+% latex support
+%
+\ifx\newenvironment\undefined\else
+  \newenvironment{guitar}{\parindent=0pt\guitarOn}{\guitarOff}
+\fi
+%
 \makeatother
 \endinput
