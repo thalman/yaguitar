@@ -10,6 +10,27 @@
 %
 \def\theChord#1{\strut{\bf #1}\hbox to 2pt{\hss}}%
 %
+\def\theGuitarEnvStart{%
+\ifx\LaTeX\undefined
+% plain
+\y@gDim=\parindent
+\advance \y@gDim by \leftskip
+\leftskip=\y@gDim
+\rightskip=\y@gDim plus 1fill
+\parindent=0pt
+\else
+% latex
+\leftskip=15pt
+\rightskip=15pt plus 1fill
+\parindent=0pt
+\fi
+\vskip \baselineskip
+}%
+%
+\def\theGuitarEnvEnd{%
+\vskip \baselineskip
+}%
+%
 \def\chordSharp{\raise 4pt\hbox{$\sharp$}}%
 \def\chordFlat{\raise 4pt\hbox{$\flat$}}%
 %
@@ -152,9 +173,9 @@
 %
 %
 %
-\def\guitarOn{\y@gOn}%
+\def\guitarOn{\y@gOn\bgroup\theGuitarEnvStart}%
 %
-\def\guitarOff{\y@gOff}%
+\def\guitarOff{\y@gOff\theGuitarEnvEnd\egroup}%
 %
 % latex support
 %
