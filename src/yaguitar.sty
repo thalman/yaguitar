@@ -11,24 +11,30 @@
 \def\theChord#1{\strut{\bf #1}\hbox to 2pt{\hss}}%
 %
 \def\theGuitarEnvStart{%
+\y@gParSave=\parindent
+\y@gLeftSkip=\leftskip
+\y@gRightSkip=\rightskip
 \ifx\LaTeX\undefined
 % plain
-\y@gDim=\parindent
-\advance \y@gDim by \leftskip
-\leftskip=\y@gDim
-\rightskip=\y@gDim plus 1fill
-\parindent=0pt
+  \y@gDim=\parindent
+  \advance \y@gDim by \leftskip
+  \leftskip=\y@gDim
+  \rightskip=\y@gDim plus 1fill
+  \parindent=0pt
 \else
 % latex
-\leftskip=15pt
-\rightskip=15pt plus 1fill
-\parindent=0pt
+  \leftskip=15pt
+  \rightskip=15pt plus 1fill
+  \parindent=0pt
 \fi
 \vskip \baselineskip
 }%
 %
 \def\theGuitarEnvEnd{%
 \vskip \baselineskip
+\parindent=\y@gParSave
+\leftskip=\y@gLeftSkip
+\rightskip=\y@gRightSkip
 }%
 %
 \def\chordSharp{\raise 4pt\hbox{$\sharp$}}%
@@ -38,11 +44,11 @@
 %
 % macros for saving original definitions of active chars
 %
-\def\y@gSaveSharp{}
-\def\y@gSaveFlat{}
-\def\y@gSaveBracket{}
-\def\y@gSaveSpace{}
-\def\y@gSaveNewLine{}
+\let\y@gSaveSharp\relax
+\let\y@gSaveFlat\relax
+\let\y@gSaveBracket\relax
+\let\y@gSaveSpace\relax
+\let\y@gSaveNewLine\relax
 \let\y@gTempCmd\relax
 %
 %
@@ -51,6 +57,9 @@
 \newbox\y@gTempBox
 \newbox\y@gTextBox
 \newdimen\y@gDim
+\newdimen\y@gParSave
+\newskip\y@gLeftSkip
+\newskip\y@gRightSkip
 \let\y@gIfHaveSpace\iffalse
 \let\y@gIfHaveTextBox\iffalse
 %
@@ -173,9 +182,24 @@
 %
 %
 %
-\def\guitarOn{\y@gOn\bgroup\theGuitarEnvStart}%
+\def\guitarOn{\y@gOn\theGuitarEnvStart\yagStropheNum=1}%
 %
-\def\guitarOff{\y@gOff\theGuitarEnvEnd\egroup}%
+\def\guitarOff{\y@gOff\theGuitarEnvEnd}%
+%
+% Strophe numbering and refrain
+%
+\def\theRefrain{R. }%
+%
+\def\refrain{\hskip -4em\hbox to 4em{\hss\theRefrain}}%
+%
+\newcount\yagStropheNum
+%
+\def\theStrophe{\the\yagStropheNum{}. }%
+%
+\def\strophe{%
+\hskip -4em\hbox to 4em{\hss\theStrophe}%
+\global\advance\yagStropheNum by 1
+}%
 %
 % latex support
 %
