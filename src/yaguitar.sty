@@ -8,7 +8,7 @@
 %
 \makeatletter
 %
-\def\theChord#1{\strut{\bf #1}\hbox to 2pt{\hss}}%
+\def\theChord#1{\vrule width 0pt depth 0.3\baselineskip height 0.8\baselineskip {\bf #1}\hbox to 0.5ex{\hss}}%
 %
 \def\theGuitarEnvStart{%
 \y@gParSave=\parindent
@@ -37,8 +37,8 @@
 \rightskip=\y@gRightSkip
 }%
 %
-\def\chordSharp{\raise 4pt\hbox{$\sharp$}}%
-\def\chordFlat{\raise 4pt\hbox{$\flat$}}%
+\def\chordSharp{\raise 0.5ex\hbox{$\sharp$}}%
+\def\chordFlat{\raise 0.5ex\hbox{$\flat$}}%
 %
 \newdimen\chordskip \chordskip=\baselineskip
 %
