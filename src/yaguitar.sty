@@ -51,17 +51,86 @@
 \let\y@gSaveNewLine\relax
 \let\y@gTempCmd\relax
 %
+%     C#mi7/5
+%     o o o o ...
+% box 1 2 3 4 -- hope that 4 boxes will do
+\newcount\y@gBoxIndex \y@gBoxIndex 0\relax
+\newbox\y@gTextBoxi
+\newbox\y@gTextBoxii
+\newbox\y@gTextBoxiii
+\newbox\y@gTextBoxiv
+\newdimen\y@gTextBoxWidth
 %
+\def\y@gGetBox#1{%
+  \ifcase #1
+    \y@gTextBoxi
+  \or
+    \y@gTextBoxi
+  \or
+    \y@gTextBoxii
+  \or
+    \y@gTextBoxiii
+  \or
+    \y@gTextBoxiv
+  \fi
+}%
+%
+\def\y@gCalcTextWidth{%
+  \y@gTextBoxWidth 0pt
+  \ifnum\y@gBoxIndex>0
+    \advance\y@gTextBoxWidth by \wd\y@gTextBoxi
+  \fi
+  \ifnum\y@gBoxIndex>1
+    \advance\y@gTextBoxWidth by \wd\y@gTextBoxii
+  \fi
+  \ifnum\y@gBoxIndex>2
+    \advance\y@gTextBoxWidth by \wd\y@gTextBoxiii
+  \fi
+  \ifnum\y@gBoxIndex>3
+    \advance\y@gTextBoxWidth by \wd\y@gTextBoxiv
+  \fi
+}%
+%
+\def\y@gTextBoxesOut{%
+  \hbox{%
+    \ifnum\y@gBoxIndex>0
+      \copy\y@gTextBoxi
+    \fi
+    \ifnum\y@gBoxIndex>1
+      \copy\y@gTextBoxii
+    \fi
+    \ifnum\y@gBoxIndex>2
+      \copy\y@gTextBoxiii
+    \fi
+    \ifnum\y@gBoxIndex>3
+      \copy\y@gTextBoxiv
+    \fi
+  }%
+}%
+%
+\def\y@gTextBoxesOutStretched#1{%
+  \hbox to #1 {%
+    \ifnum\y@gBoxIndex>0
+      \copy\y@gTextBoxi
+    \fi
+    \ifnum\y@gBoxIndex>1
+      \hfil\copy\y@gTextBoxii
+    \fi
+    \ifnum\y@gBoxIndex>2
+      \hfil\copy\y@gTextBoxiii
+    \fi
+    \ifnum\y@gBoxIndex>3
+      \hfil\copy\y@gTextBoxiv
+    \fi
+  }%
+}%
 %
 \newbox\y@gChordBox
 \newbox\y@gTempBox
-\newbox\y@gTextBox
 \newdimen\y@gDim
 \newdimen\y@gParSave
 \newskip\y@gLeftSkip
 \newskip\y@gRightSkip
-\let\y@gIfHaveSpace\iffalse
-\let\y@gIfHaveTextBox\iffalse
 %
 % Active characters inside chord (# = sharp, b = flat)
 %
@@ -102,64 +171,72 @@
 %
 \def\y@gChordBracket#1]{%
   \y@gChord{#1}%
-  \let\y@gIfHaveSpace\iffalse
-  \let\y@gIfHaveTextBox\iftrue
-  \setbox\y@gTextBox=\hbox\bgroup
+  \y@gBoxIndex 1\relax
+  \setbox\y@gGetBox{\y@gBoxIndex}=\hbox\bgroup
 }%
 %
 \def\y@gFlushTextBox{%
-  \y@gIfHaveTextBox
+  \ifnum\y@gBoxIndex>0
     \let\y@gTempCmd\egroup
   \else
     \let\y@gTempCmd\relax
   \fi
   \y@gTempCmd
-  \y@gIfHaveTextBox
-    \ifdim \wd\y@gTextBox>\wd\y@gChordBox
-      \copy\y@gTextBox
-    \fi
-    \ifdim \wd\y@gTextBox=\wd\y@gChordBox
-      \copy\y@gTextBox
-    \fi
-    \ifdim \wd\y@gTextBox<\wd\y@gChordBox
-      \ifdim \wd\y@gTextBox=0pt
-        \hbox to \wd\y@gChordBox{\copy\y@gTextBox\hss}%
-      \else
-        \y@gIfHaveSpace
-          \hbox to \wd\y@gChordBox{\copy\y@gTextBox\hss}%
+  \ifnum\y@gBoxIndex>0
+    \y@gCalcTextWidth
+    \ifdim \y@gTextBoxWidth<\wd\y@gChordBox
+      \ifnum\y@gBoxIndex=1
+        \ifdim \wd \y@gTextBoxi = 0pt
+          %empty box
+          \hbox to \wd\y@gChordBox{\copy\y@gTextBoxi\hfill}%
         \else
+          %no space => use rule
           \y@gDim=\wd\y@gChordBox
-          \advance\y@gDim by -\wd\y@gTextBox
-          \hbox to \wd\y@gChordBox{\copy\y@gTextBox\vrule width \y@gDim height 0.5ex depth -0.4ex}%
+          \advance\y@gDim by -\y@gTextBoxWidth
+          \hbox to \wd\y@gChordBox{\copy\y@gTextBoxi\vrule width \y@gDim height 0.5ex depth -0.4ex}%
         \fi
+      \else
+        %have space => use \hfil
+        \y@gTextBoxesOutStretched{\wd\y@gChordBox}%
       \fi
+    \else
+      \y@gTextBoxesOut
     \fi
+    \y@gBoxIndex 0\relax
   \fi
-  \let\y@gIfHaveTextBox\iffalse
 }%
 %
 %
 \def\y@gActivateEnvChars{\catcode`\^^M=13\catcode`\[=13\catcode`\ =13}%
 \def\y@gDeactivateEnvChars{\catcode`\^^M=5\catcode`\[=12\catcode`\ =10}%
 %
-\def\y@gNewLine{\y@gSpace\y@gFlushTextBox\par\leavevmode}%
+\def\y@gNewLine{\y@gFlushTextBox\par\leavevmode}%
 \def\y@gSpace{%
   \space
-  \y@gIfHaveTextBox
+  \ifnum\y@gBoxIndex>0
     \let\y@gTempCmd\egroup
   \else
     \let\y@gTempCmd\relax
   \fi
   \y@gTempCmd
-  \let\y@gIfHaveSpace\iftrue
-  \y@gIfHaveTextBox
-    \let\y@gTempCmd\bgroup
-  \else
-    \let\y@gTempCmd\relax
+  \let\y@gTempCmd\egroup
+  \ifnum\y@gBoxIndex>0
+    \ifnum\y@gBoxIndex=4 
+      \y@gTextBoxesOutStretched{\wd\y@gChordBox}%
+      \y@gBoxIndex 0\relax
+    \else
+      \y@gCalcTextWidth
+      \ifdim\y@gTextBoxWidth>\wd\y@gChordBox
+        \y@gTextBoxesOut
+        \y@gBoxIndex 0\relax
+      \else
+        \global\advance\y@gBoxIndex by 1\relax
+        \let\y@gTempCmd\relax%
+      \fi
+    \fi
   \fi
-  \y@gTempCmd
-  \y@gFlushTextBox}%
-%\def\y@gSpace{\space\expandafter\y@gFlushTextBox\let\y@gIfHaveSpace\iftrue}%
+  \setbox\y@gGetBox{\y@gBoxIndex}=\hbox\bgroup\y@gTempCmd
+}%
 %
 %
 %
