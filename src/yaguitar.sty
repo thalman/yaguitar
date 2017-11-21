@@ -259,9 +259,10 @@
 %
 %
 %
-\def\guitarOn{\y@gOn\theGuitarEnvStart\yagStropheNum=1}%
+% \def\guitarOn{\y@gOn\theGuitarEnvStart\yagStropheNum=1\y@gBoxIndex 0\relax}%
+\def\guitarOn{\y@gOn\theGuitarEnvStart\yagStropheNum 1\y@gBoxIndex 0\relax}%
 %
-\def\guitarOff{\y@gOff\theGuitarEnvEnd}%
+\def\guitarOff{\y@gFlushTextBox\y@gOff\theGuitarEnvEnd}%
 %
 % Strophe numbering and refrain
 %
