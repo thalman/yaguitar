@@ -210,7 +210,7 @@
 \def\y@gActivateEnvChars{\catcode`\^^M=13\catcode`\[=13\catcode`\ =13}%
 \def\y@gDeactivateEnvChars{\catcode`\^^M=5\catcode`\[=12\catcode`\ =10}%
 %
-\def\y@gNewLine{\y@gFlushTextBox\par\leavevmode}%
+\def\y@gNewLine{\y@gSpace\y@gFlushTextBox\par\leavevmode}%
 \def\y@gSpace{%
   \space
   \ifnum\y@gBoxIndex>0
