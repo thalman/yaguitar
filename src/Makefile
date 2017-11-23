@@ -7,4 +7,4 @@ yaguitar-latex.pdf: *.tex *.sty
 	pdflatex yaguitar-latex.tex && rm -rf *.log *.aux
 
 clean:
-	/bin/rm -d *.pdf
+	/bin/rm -f *.pdf *~
