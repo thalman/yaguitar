@@ -49,6 +49,7 @@
 \let\y@gSaveBracket\relax
 \let\y@gSaveSpace\relax
 \let\y@gSaveNewLine\relax
+\let\y@gSavePipe\relax
 \let\y@gTempCmd\relax
 %
 %     C#mi7/5
@@ -207,8 +208,18 @@
 }%
 %
 %
-\def\y@gActivateEnvChars{\catcode`\^^M=13\catcode`\[=13\catcode`\ =13}%
-\def\y@gDeactivateEnvChars{\catcode`\^^M=5\catcode`\[=12\catcode`\ =10}%
+\def\y@gActivateEnvChars{\catcode`\^^M=13\catcode`\[=13\catcode`\ =13\catcode`\|=13}%
+\def\y@gDeactivateEnvChars{\catcode`\^^M=5\catcode`\[=12\catcode`\ =10\catcode`\|=12}%
+%
+\def\y@gPipe{%
+  \hbox to 1.5ex{%
+    \hss
+    \vrule width 0.2ex height 0.6\baselineskip depth 0.2\baselineskip
+    \hss
+    \vrule width 0.2ex height 0.6\baselineskip depth 0.2\baselineskip
+    \hss
+  }%
+}%
 %
 \def\y@gNewLine{\y@gSpace\y@gFlushTextBox\par\leavevmode}%
 \def\y@gSpace{%
@@ -246,12 +257,14 @@
 \let\y@gSaveBracket[\let[\y@gChordEnv%
 \let\y@gSaveNewLine^^M\let^^M\y@gNewLine%
 \let\y@gSaveSpace \let \y@gSpace%
+\let\y@gSavePipe|\let|\y@gPipe%
 }%
 %
 \def\y@gOff{%
 \let[\y@gSaveBracket%
 \let^^M\y@gSaveNewLine%
 \let \y@gSaveSpace%
+\let|\y@gSavePipe%
 \y@gDeactivateEnvChars%
 }%
 %
