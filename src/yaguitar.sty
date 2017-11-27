@@ -37,8 +37,8 @@
 \rightskip=\y@gRightSkip
 }%
 %
-\def\chordSharp{\raise 0.5ex\hbox{$\sharp$}}%
-\def\chordFlat{\raise 0.5ex\hbox{$\flat$}}%
+\def\yagSharp{\raise 0.5ex\hbox{$\sharp$}}%
+\def\yagFlat{\raise 0.5ex\hbox{$\flat$}}%
 %
 \newdimen\chordskip \chordskip=\baselineskip
 %
@@ -142,8 +142,8 @@
 %
 \def\y@gChordCharsOn{%
 \y@gActivateChordChars
-\let\y@gSaveFlat b\let b\chordFlat
-\let\y@gSaveSharp #\let #\chordSharp
+\let\y@gSaveFlat b\let b\yagFlat
+\let\y@gSaveSharp #\let #\yagSharp
 }%
 %
 \def\y@gChordCharsOff{%
@@ -292,11 +292,182 @@
 \global\advance\yagStropheNum by 1
 }%
 %
-% latex support
+% latex environment
 %
 \ifx\newenvironment\undefined\else
   \newenvironment{guitar}{\parindent=0pt\guitarOn}{\guitarOff}
 \fi
+%
+% guitar & uke chord schemes
+%
+\let\chordtemp\y@gTextBoxWidth
+\newdimen\y@gSchemaWidth
+\newdimen\yagXStep\yagXStep 1.5ex
+\newdimen\yagYStep\yagYStep 3ex
+%
+\long\def\y@gatpos#1#2#3{\hbox to 0 pt{\hskip #1\raise #2\hbox{#3}\hss}}%
+%
+\def\y@ghline#1#2#3#4{%
+  \y@gatpos{#1}{#2}{\vrule height #4 depth 0ex width #3}%
+}%
+%
+\def\y@gvline#1#2#3#4{%
+  \y@gatpos{#1}{#2}{\vrule height #3 depth 0ex width #4}%
+}%
+%
+\newcount\y@gCnt
+\newdimen\y@gX
+\newdimen\y@gY
+%
+%
+% #1 - number of strings
+% #2 - number of ftrets
+% #3 - 0/1 make top line thick
+\def\yagfretboard#1#2#3{%
+  \y@gDim 0.1ex
+  \hbox{%
+    % draw strings
+    \y@gCnt #1
+    \y@gY\yagYStep
+    \multiply\y@gY by #2
+    \loop
+      \advance\y@gCnt by -1
+      \y@gX\yagXStep
+      \multiply\y@gX by \y@gCnt
+      \y@gvline{\y@gX}{0ex}{\y@gY}{\y@gDim}%
+      \ifnum\y@gCnt>0
+    \repeat
+    % draw frets
+    \y@gCnt #2
+    \y@gX\yagXStep
+    \multiply\y@gX by #1
+    \advance\y@gX by -\yagXStep
+    \advance\y@gX by \y@gDim
+    %
+    \y@gY\yagYStep
+    \multiply\y@gY by \y@gCnt
+    \ifnum#3>0
+      \advance\y@gY by -2\y@gDim
+      \y@ghline{0ex}{\y@gY}{\y@gX}{3\y@gDim}%
+    \else
+      \y@ghline{0ex}{\y@gY}{\y@gX}{\y@gDim}%
+    \fi
+    %
+    \loop
+      \advance\y@gCnt by -1
+      \y@gY\yagYStep
+      \multiply\y@gY by \y@gCnt
+      \y@ghline{0ex}{\y@gY}{\y@gX}{\y@gDim}%
+      \ifnum\y@gCnt>0
+    \repeat
+  }%
+}%
+%
+%
+% #1 - string
+% #2 - fret
+% #3 - x pos correction
+% #4 - what (bullet, x or so)
+\def\y@gfingersign#1#2#3#4{{%
+  \setbox\y@gTempBox\hbox{#4}%
+  \y@gDim \wd\y@gTempBox
+%
+  \y@gX\yagXStep
+  \multiply\y@gX by #1
+  \advance\y@gX by -0.5\y@gDim
+  \advance\y@gX by 0.05ex
+%
+  \y@gY\yagYStep
+  \y@gCnt 4
+  \advance\y@gCnt by -#2
+  \multiply\y@gY by \y@gCnt
+  \advance\y@gY by 0.5\yagYStep
+  \advance\y@gY by -0.5\y@gDim
+  \y@gatpos{\y@gX}{\y@gY}{#4}%
+}}%
+%
+\def\y@gsimplefinger#1#2{%
+  \y@gfingersign{#1}{#2}{0.1ex}{$\bullet$}%
+}%
+%
+\def\y@gnoplay#1#2{%
+  \y@gfingersign{#1}{#2}{0.1ex}{$\times$}%
+}%
+%
+\def\y@gposition#1{%
+  \y@gatpos{0pt}{3.3\yagYStep}{\hbox to 0pt{#1\hss}}%
+}%
+%
+\def\y@gchordname#1#2{%
+  \y@gatpos{0pt}{4.2\yagYStep}{\hbox to #2{\hss #1\hss}}%
+}%
+%
+\def\y@gfinger#1#2{%
+  \ifnum#2=-1
+    \y@gnoplay{#1}{1}%
+  \else
+    \ifnum#2>0
+      \y@gsimplefinger{#1}{#2}%
+    \fi
+  \fi
+}%
+%
+% \chordScheme{Cdim}{-1}{0}{1}{2}{1}{2}{}}%
+% \chordScheme{A}{0}{0}{2}{2}{2}{0}{}}%
+% \chordScheme{Hmi}113321{2}}%
+%
+\def\chordScheme#1#2#3#4#5#6#7#8{{%
+\hskip 0pt
+\setbox\y@gTempBox=\hbox{#8}%
+\hbox to 7\yagXStep {%
+  \hbox to 0ex{%
+    \hskip \yagXStep
+    \ifdim\wd\y@gTempBox > 0ex
+      \yagfretboard 640
+    \else
+      \yagfretboard 641
+    \fi
+    \hss
+  }%
+%
+  \y@gfinger{1}{#2}%
+  \y@gfinger{2}{#3}%
+  \y@gfinger{3}{#4}%
+  \y@gfinger{4}{#5}%
+  \y@gfinger{5}{#6}%
+  \y@gfinger{6}{#7}%
+%
+  \y@gposition{#8}%
+  \y@gchordname{#1}{7\yagXStep}%
+  \hss}%
+}}%
+%
+% \ukeChordScheme{F}{2}{0}{1}{0}{}
+% \ukeChordScheme{C}0003{}
+%
+\def\ukeChordScheme#1#2#3#4#5#6{{%
+\hskip 0pt
+\setbox\y@gTempBox=\hbox{#6}%
+\hbox to 5\yagXStep {%
+  \hbox to 0ex{%
+    \hskip \yagXStep
+    \ifdim\wd\y@gTempBox > 0ex
+      \yagfretboard 440
+    \else
+      \yagfretboard 441
+    \fi
+    \hss
+  }%
+%
+  \y@gfinger{1}{#2}%
+  \y@gfinger{2}{#3}%
+  \y@gfinger{3}{#4}%
+  \y@gfinger{4}{#5}%
+%
+  \y@gposition{#6}%
+  \y@gchordname{#1}{5\yagXStep}%
+  \hss}%
+}}%
 %
 \makeatother
 \endinput
