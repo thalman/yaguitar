@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# This CLI application helps with .txt to .tex conversion
+# of song. Many websites provides lyrics with chords in
+# two line style:
+#
+#     C    G    C
+#     heya heya heya
+#
+# This app converts it into
+#
+#     [C]heya [G]heya [C]heya
+#
+# so it can be used with yaguitar.
+
+import sys
+reload (sys)
+sys.setdefaultencoding('utf-8')
+
+class txt2guitar:
+    def isChordLine (self, line):
+        spaces = 0
+        letters = 0
+        maxlen = 0
+        currentlen = 0
+        for l in line:
+            if l == " ":
+                spaces += 1
+                if currentlen > maxlen : maxlen = currentlen
+                currentlen = 0
+            else:
+                letters += 1
+                currentlen += 1
+        if currentlen > maxlen : maxlen = currentlen
+        if not letters: return False
+        if spaces / letters > 0.5: return True
+        return False
+    def putChordsIntoLine (self, chords, text):
+        chords += "    "
+        while len(chords) < len(text): chords += " "
+        while len(chords) > len(text): text += " "
+        result = ""
+        for i in range (len(text) -1 ):
+            if chords [i] != " ":
+                j = 0
+                result += "["
+                while chords [i + j] != " " :
+                    result += chords [i+j]
+                    chords = chords[:i+j] + " " + chords[i+j+1:]
+                    j += 1
+                result += "]"
+            result += text[i]
+        return result
+    def read(self, file):
+        chords  = None
+        envstarted = False
+        title = False
+        f = open(file)
+        for line in f.readlines():
+            line = line.rstrip ().decode ('utf-8')
+            if self.isChordLine (line):
+                chords = line
+                title = True
+                if not envstarted:
+                    print "\\begin{guitar}"
+                    envstarted = True
+            else:
+                if not title and len(line.strip()):
+                    title = True
+                    print "\\section*{%s}" % (line.strip ())
+                    continue
+                if chords:
+                    line = self.putChordsIntoLine (chords, line)
+                print line.strip()
+                chords = None
+        if envstarted:
+            print "\\end{guitar}"
+
+
+if len (sys.argv) != 2:
+    print "usage: txt2guitar file.txt"
+    sys.exit (1)
+
+conv = txt2guitar ()
+conv.read (sys.argv[1])
+sys.exit (0)
