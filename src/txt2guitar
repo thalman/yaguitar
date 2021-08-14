@@ -15,6 +15,7 @@
 # so it can be used with yaguitar.
 
 import sys
+import re
 
 
 class txt2guitar:
@@ -52,9 +53,15 @@ class txt2guitar:
             result += text[i]
         return result
     def postTransformation(self, line):
+        line = line.strip()
         line = line.replace("/:", "|:")
         line = line.replace(":/", ":|")
-        return line.strip()
+
+        strophe = re.compile("^[0-9]+\.* *")
+        if re.match(strophe, line):
+            line = "\\strophe{}%\n" + re.sub(strophe, "", line)
+
+        return line
     def read(self, file):
         chords  = None
         envstarted = False
