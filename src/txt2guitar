@@ -51,6 +51,10 @@ class txt2guitar:
                 result += "]"
             result += text[i]
         return result
+    def postTransformation(self, line):
+        line = line.replace("/:", "|:")
+        line = line.replace(":/", ":|")
+        return line.strip()
     def read(self, file):
         chords  = None
         envstarted = False
@@ -71,7 +75,7 @@ class txt2guitar:
                     continue
                 if chords:
                     line = self.putChordsIntoLine (chords, line)
-                print(line.strip())
+                print(self.postTransformation(line))
                 chords = None
         if envstarted:
             print("\\end{guitar}")
