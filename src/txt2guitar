@@ -37,23 +37,27 @@ class txt2guitar:
         if spaces / letters > 0.5: return True
         return False
     def putChordsIntoLine (self, chords, text):
-        chords += "    "
+        inchord = False
+        text += " "
+        chords += " "
         while len(chords) < len(text): chords += " "
         while len(chords) > len(text): text += " "
         result = ""
-        for i in range (len(text) -1 ):
-            if chords [i] != " ":
+        for i in range (len(text) - 1):
+            if chords [i] != " " and not inchord:
+                inchord = True
                 j = 0
                 result += "["
                 while chords [i + j] != " " :
-                    result += chords [i+j]
-                    chords = chords[:i+j] + " " + chords[i+j+1:]
+                    result += chords [i + j]
                     j += 1
                 result += "]"
+            if chords [i] == " ":
+                inchord = False
             result += text[i]
-        return result
+        return result.rstrip(" ")
     def postTransformation(self, line):
-        line = line.strip()
+        line = line.strip(" ")
         line = line.replace("/:", "|:")
         line = line.replace(":/", ":|")
 
@@ -68,7 +72,7 @@ class txt2guitar:
         title = False
         f = open(file)
         for line in f.readlines():
-            line = line.rstrip ()
+            line = line.rstrip ("\n")
             if self.isChordLine (line):
                 chords = line
                 title = True
