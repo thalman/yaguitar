@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # This CLI application helps with .txt to .tex conversion
@@ -15,8 +15,7 @@
 # so it can be used with yaguitar.
 
 import sys
-reload (sys)
-sys.setdefaultencoding('utf-8')
+
 
 class txt2guitar:
     def isChordLine (self, line):
@@ -58,28 +57,28 @@ class txt2guitar:
         title = False
         f = open(file)
         for line in f.readlines():
-            line = line.rstrip ().decode ('utf-8')
+            line = line.rstrip ()
             if self.isChordLine (line):
                 chords = line
                 title = True
                 if not envstarted:
-                    print "\\begin{guitar}"
+                    print("\\begin{guitar}")
                     envstarted = True
             else:
                 if not title and len(line.strip()):
                     title = True
-                    print "\\section*{%s}" % (line.strip ())
+                    print("\\section*{%s}" % (line.strip ()))
                     continue
                 if chords:
                     line = self.putChordsIntoLine (chords, line)
-                print line.strip()
+                print(line.strip())
                 chords = None
         if envstarted:
-            print "\\end{guitar}"
+            print("\\end{guitar}")
 
 
 if len (sys.argv) != 2:
-    print "usage: txt2guitar file.txt"
+    print("usage: txt2guitar file.txt")
     sys.exit (1)
 
 conv = txt2guitar ()
