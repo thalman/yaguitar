@@ -5,7 +5,7 @@ Yet another TeX style for guitar chords
 The main goal is to make song typing as simple as possible. Also using international characters is mandatory.
 
 ## Using yaguitar
-Yaguitar style works in both - planTeX and LaTeX
+Yaguitar style works in both - plainTeX and LaTeX
 
 ### Commands
 #### \chord
