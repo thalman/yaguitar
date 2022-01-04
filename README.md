@@ -26,16 +26,7 @@ In plainTeX use
 Inside guitar environment some characters are active (square bracket, pipe, space and new line). This allows stretch text under
 chords when it is needed.
 
-    \begin{guitar}
-    [Ami]Lorem [C]ipsum do[G]lor sit amet,
-    con[C]secte[C#]tuer adipiscing elit.
-    Etiam quis qu[Cmi]am. [Cbmi]Maecenas [Hmi]lorem.
-    |: [Ami]Etiam dui sem, [D#dim]fer[Ddim]men[Dbdim]tum vitae, :|
-    sagit[C#mi7/5]tis id, [D]malesuada in, quam. In convallis.
-    \end{guitar}
-
-
-### From Quick Start guide
+### Quick Start Guide
 
 ![Song](doc/quickstartguide.jpg)
 
