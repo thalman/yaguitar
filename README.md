@@ -9,8 +9,39 @@ Yaguitar style works in both - plainTeX and LaTeX
 
 ### Commands
 #### \chord
+
+The \chord#1 command prints the chord name above the current place
+
+    \chord{D}V širém poli studáne\chord{A}čka \chord{G}kamen\chord{D}ná
+
+produces something like
+
+    D                   A   G    D
+    V širém poli studánečka kamenná
+
+If you want to adjust the chord style, you may redefine \theChord, for exmple:
+
+    \def\theChord#1{\strut{\footnotesize\bf #1}\hbox to 2pt{\hss}}%
+
+
 #### \chordScheme
+
+The `\chordScheme#1#2#3#4#5#6#7#8` draws chord diagram. First parameter is the name (Ami7). Next
+six parameters represents strings (from top) and where to press them.
+
+* -1 - muted string
+* 0 - empty string
+* 1+ - fretboard position
+
+Last parameter is the fretboard position for chords played up the neck.
+
+C major example: `\chordScheme{C}332010{}` and `\chordScheme{C}113331{3}`
+
+![Chords](doc/c-chord.jpg)
+
 #### \ukeChordScheme
+
+The `\ukeChordScheme` is the same as `\chordScheme`, just for four string instrument like uke.
 
 ### Guitar environment
 Yaguitar defines new environment _guitar_. In LaTex use
